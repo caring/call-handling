@@ -1,0 +1,52 @@
+syntax = "proto3";
+package callhandling;
+
+option go_package = "pb";
+
+service CallHandlingService {
+  rpc Ping (PingRequest)                  returns (PingResponse);
+  rpc CreateCallhandling(CreateCallhandlingRequest) returns (CallhandlingResponse) {}
+  rpc UpdateCallhandling(UpdateCallhandlingRequest) returns (CallhandlingResponse) {}
+  rpc DeleteCallhandling(ByIDRequest)          returns (CallhandlingResponse) {}
+  rpc GetCallhandling(ByIDRequest)             returns (CallhandlingResponse) {}
+}
+
+// #################################
+//          Ping
+// #################################
+
+message PingRequest {
+  string data = 1;
+}
+
+message PingResponse {
+  string data = 1;
+}
+
+// #################################
+//          Shared Messages
+// #################################
+message ByIDRequest {
+  string id = 1;
+}
+
+message LoadKeyRequest {
+  repeated string keys = 1;
+}
+
+// #################################
+//          Callhandling
+// #################################
+message CallhandlingResponse {
+  string id = 1;
+  string name = 2;
+}
+
+message CreateCallhandlingRequest {
+  string name = 1;
+}
+
+message UpdateCallhandlingRequest {
+  string id = 1;
+  string name = 2;
+}

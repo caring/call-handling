@@ -1,12 +1,6 @@
---
--- Microservice: Product Dictionary Service
---
--- Setup schema
--- The default COLLATE for utm8mb4 is utf8mb4_0900_ai_ci. No need to be explicit.
-CREATE SCHEMA IF NOT EXISTS products CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;
+CREATE SCHEMA IF NOT EXISTS call_handling CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;
 
--- Switch to using products schema
-USE products;
+USE call_handling;
 
 CREATE TABLE categories (
   category_id      BINARY(16) NOT NULL PRIMARY KEY,
@@ -53,3 +47,16 @@ CREATE TABLE products (
 ENGINE=InnoDB
 DEFAULT CHARSET=utf8mb4
 COMMENT='A service or product that caring markets for its b2b customers';
+
+
+CREATE TABLE calls (
+    call_id         BIGINT NOT NULL PRIMARY KEY,
+    sid             BIGINT,
+    conversation_id BIGINT,
+    ANI             VARCHAR(50),
+    DNIS            VARCHAR(50),
+    status          VARCHAR(50)
+)
+ENGINE=InnoDB
+DEFAULT CHARSET=utf8mb4
+COMMENT='CallHandling Service: Collection of all call records';

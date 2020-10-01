@@ -16,7 +16,7 @@ services:
       - .env
     ports:
       - ${HOST_PORT}:${PORT}
-  productsdb:
+  call-handlingdb:
     image: mysql:latest
     restart: always
     environment:

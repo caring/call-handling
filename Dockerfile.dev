@@ -1,4 +1,4 @@
-FROM golang:latest
+FROM golang:1.14
 
 # ARG security: https://bit.ly/2oY3pCn
 ARG DOCKER_GIT_CREDENTIALS=default

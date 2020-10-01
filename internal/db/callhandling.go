@@ -6,64 +6,62 @@ import (
 	"fmt"
 
 	"github.com/caring/go-packages/pkg/errors"
-	"github.com/google/uuid"
 
 	"github.com/caring/call-handling/pb"
 )
 
-
-
-// callhandlingService provides an API for interacting with the callhandlings table
+// callhandlingService provides an API for interacting with the calls table
 type callhandlingService struct {
 	db    *sql.DB
 	stmts map[string]*sql.Stmt
 }
 
-// Callhandling is a struct representation of a row in the callhandlings table
-type Callhandling struct {
-	ID  	uuid.UUID
-	Name  string
+// Call is a struct representation of a row in the calls table
+type Call struct {
+	ID             int64
+	SID            int64
+	ConversationID int64
+	ANI            string
+	DNIS           string
+	Status         string
 }
 
-// protoCallhandling is an interface that most proto callhandling objects will satisfy
-type protoCallhandling interface {
-	GetName() string
+// protoCall is an interface that most proto call objects will satisfy
+type protoCall interface {
+	GetCall() *pb.Call
 }
 
-// NewCallhandling is a convenience helper cast a proto callhandling to it's DB layer struct
-func NewCallhandling(ID string, proto protoCallhandling) (*Callhandling, error) {
-	mID, err := ParseUUID(ID)
-	if err != nil {
-		return nil, err
-	}
-
-	return &Callhandling{
-		ID:  	mID,
-		Name: proto.GetName(),
-	}, nil
-}
-
-// ToProto casts a db callhandling into a proto response object
-func (m *Callhandling) ToProto() *pb.CallhandlingResponse {
-	return &pb.CallhandlingResponse{
-		Id:  				m.ID.String(),
-		Name:       m.Name,
+// NewCall is a convenience helper cast a proto call to it's DB layer struct
+func NewCall(proto protoCall) *Call {
+	c := proto.GetCall()
+	return &Call{
+		ID:             c.GetCallId(),
+		SID:            c.GetSid(),
+		ConversationID: c.GetConversationId(),
+		ANI:            c.GetANI(),
+		DNIS:           c.GetDNIS(),
+		Status:         c.GetStatus(),
 	}
 }
 
-// Get fetches a single callhandling from the db
-func (svc *callhandlingService) Get(ctx context.Context, ID uuid.UUID) (*Callhandling, error) {
+// ToProto casts a db call into a proto response object
+func (m *Call) ToProto() *pb.CallhandlingResponse {
+	return &pb.CallhandlingResponse{}
+}
+
+// Get fetches a single call from the db
+func (svc *callhandlingService) Get(ctx context.Context, ID int64) (*Call, error) {
 	return svc.get(ctx, false, ID)
 }
 
-// GetTx fetches a single callhandling from the db inside of a tx from ctx
-func (svc *callhandlingService) GetTx(ctx context.Context, ID uuid.UUID) (*Callhandling, error) {
+// GetTx fetches a single call from the db inside of a tx from ctx
+func (svc *callhandlingService) GetTx(ctx context.Context, ID int64) (*Call, error) {
 	return svc.get(ctx, true, ID)
 }
 
-// get fetches a single callhandling from the db
-func (svc *callhandlingService) get(ctx context.Context, useTx bool, ID uuid.UUID) (*Callhandling, error) {
-	errMsg := func() string { return "Error executing get callhandling - " + fmt.Sprint(ID) }
+// get fetches a single call from the db
+func (svc *callhandlingService) get(ctx context.Context, useTx bool, ID int64) (*Call, error) {
+	errMsg := func() string { return "Error executing get call - " + fmt.Sprint(ID) }
 
 	var (
 		stmt *sql.Stmt
@@ -77,15 +75,15 @@ func (svc *callhandlingService) get(ctx context.Context, useTx bool, ID uuid.UUI
 			return nil, err
 		}
 
-		stmt = tx.Stmt(svc.stmts["get-callhandling"])
+		stmt = tx.Stmt(svc.stmts["get-call"])
 	} else {
-		stmt = svc.stmts["get-callhandling"]
+		stmt = svc.stmts["get-call"]
 	}
 
-	p := Callhandling{}
+	p := Call{}
 
 	err = stmt.QueryRowContext(ctx, ID).
-		Scan(&m.CallhandlingID, &m.Name)
+		Scan(&p.ID, &p.SID, &p.ConversationID, &p.ANI, &p.DNIS, &p.Status)
 	if err != nil {
 
 		if errors.Is(err, sql.ErrNoRows) {
@@ -98,20 +96,20 @@ func (svc *callhandlingService) get(ctx context.Context, useTx bool, ID uuid.UUI
 	return &p, nil
 }
 
-// Create a new callhandling
-func (svc *callhandlingService) Create(ctx context.Context, input *Callhandling) error {
+// Create a new call
+func (svc *callhandlingService) Create(ctx context.Context, input *Call) error {
 	return svc.create(ctx, false, input)
 }
 
-// CreateTx creates a new callhandling withing a tx from ctx
-func (svc *callhandlingService) CreateTx(ctx context.Context, input *Callhandling) error {
+// CreateTx creates a new call withing a tx from ctx
+func (svc *callhandlingService) CreateTx(ctx context.Context, input *Call) error {
 	return svc.create(ctx, true, input)
 }
 
-// create a new callhandling. if useTx = true then it will attempt to create the callhandling within a transaction
+// create a new call. if useTx = true then it will attempt to create the callhandling within a transaction
 // from context.
-func (svc *callhandlingService) create(ctx context.Context, useTx bool, input *Callhandling) error {
-	errMsg := func() string { return "Error executing create callhandling - " + fmt.Sprint(input) }
+func (svc *callhandlingService) create(ctx context.Context, useTx bool, input *Call) error {
+	errMsg := func() string { return "Error executing create call - " + fmt.Sprint(input) }
 
 	var (
 		stmt *sql.Stmt
@@ -125,12 +123,12 @@ func (svc *callhandlingService) create(ctx context.Context, useTx bool, input *C
 			return err
 		}
 
-		stmt = tx.Stmt(svc.stmts["create-callhandling"])
+		stmt = tx.Stmt(svc.stmts["create-call"])
 	} else {
-		stmt = svc.stmts["create-callhandling"]
+		stmt = svc.stmts["create-call"]
 	}
 
-	result, err := stmt.ExecContext(ctx, input.CallhandlingID, input.Name)
+	result, err := stmt.ExecContext(ctx, input.ID, input.SID, input.ConversationID, input.ANI, input.DNIS, input.Status)
 	if err != nil {
 		return errors.Wrap(err, errMsg())
 	}
@@ -141,25 +139,25 @@ func (svc *callhandlingService) create(ctx context.Context, useTx bool, input *C
 	}
 
 	if rowCount == 0 {
-		return errors.Wrap(ErrNotCreated, errMsg())
+		// return errors.Wrap(ErrNotCreated, errMsg()) //TODO: ErrNotCreated missing
 	}
 
 	return nil
 }
 
-// Update updates a single callhandling row in the DB
-func (svc *callhandlingService) Update(ctx context.Context, input *Callhandling) error {
+// Update updates a single call row in the DB
+func (svc *callhandlingService) Update(ctx context.Context, input *Call) error {
 	return svc.update(ctx, false, input)
 }
 
-// UpdateTx updates a single callhandling row in the DB within a tx from ctx
-func (svc *callhandlingService) UpdateTx(ctx context.Context, input *Callhandling) error {
+// UpdateTx updates a single call row in the DB within a tx from ctx
+func (svc *callhandlingService) UpdateTx(ctx context.Context, input *Call) error {
 	return svc.update(ctx, true, input)
 }
 
-// update a callhandling. if useTx = true then it will attempt to update the callhandling within a transaction
+// update a call. if useTx = true then it will attempt to update the callhandling within a transaction
 // from context.
-func (svc *callhandlingService) update(ctx context.Context, useTx bool, input *Callhandling) error {
+func (svc *callhandlingService) update(ctx context.Context, useTx bool, input *Call) error {
 	errMsg := func() string { return "Error executing update callhandling - " + fmt.Sprint(input) }
 
 	var (
@@ -174,12 +172,12 @@ func (svc *callhandlingService) update(ctx context.Context, useTx bool, input *C
 			return err
 		}
 
-		stmt = tx.Stmt(svc.stmts["update-callhandling"])
+		stmt = tx.Stmt(svc.stmts["update-call"])
 	} else {
-		stmt = svc.stmts["update-callhandling"]
+		stmt = svc.stmts["update-call"]
 	}
 
-	result, err := stmt.ExecContext(ctx, input.Name, input.CallhandlingID)
+	result, err := stmt.ExecContext(ctx, input.ID, input.SID, input.ConversationID, input.ANI, input.DNIS, input.Status)
 	if err != nil {
 		return errors.Wrap(err, errMsg())
 	}
@@ -196,20 +194,20 @@ func (svc *callhandlingService) update(ctx context.Context, useTx bool, input *C
 	return nil
 }
 
-// Delete sets deleted_at for a single callhandlings row
-func (svc *callhandlingService) Delete(ctx context.Context, ID uuid.UUID) error {
+// Delete sets deleted_at for a single calls row
+func (svc *callhandlingService) Delete(ctx context.Context, ID int64) error {
 	return svc.delete(ctx, false, ID)
 }
 
-// DeleteTx sets deleted_at for a single callhandlings row within a tx from ctx
-func (svc *callhandlingService) DeleteTx(ctx context.Context, ID uuid.UUID) error {
+// DeleteTx sets deleted_at for a single calls row within a tx from ctx
+func (svc *callhandlingService) DeleteTx(ctx context.Context, ID int64) error {
 	return svc.delete(ctx, true, ID)
 }
 
 // delete a callhandling by setting deleted at. if useTx = true then it will attempt to delete the callhandling within a transaction
 // from context.
-func (svc *callhandlingService) delete(ctx context.Context, useTx bool, ID uuid.UUID) error {
-	errMsg := func() string { return "Error executing delete callhandling - " + ID.String() }
+func (svc *callhandlingService) delete(ctx context.Context, useTx bool, ID int64) error {
+	errMsg := func() string { return "Error executing delete call - " + fmt.Sprint(ID) }
 
 	var (
 		stmt *sql.Stmt
@@ -223,9 +221,9 @@ func (svc *callhandlingService) delete(ctx context.Context, useTx bool, ID uuid.
 			return err
 		}
 
-		stmt = tx.Stmt(svc.stmts["delete-callhandling"])
+		stmt = tx.Stmt(svc.stmts["delete-call"])
 	} else {
-		stmt = svc.stmts["delete-callhandling"]
+		stmt = svc.stmts["delete-call"]
 	}
 
 	result, err := stmt.ExecContext(ctx, ID)
@@ -244,4 +242,3 @@ func (svc *callhandlingService) delete(ctx context.Context, useTx bool, ID uuid.
 
 	return nil
 }
-

@@ -6,6 +6,14 @@ option go_package = ".;pb";
 service Callhandling {
   rpc Ping (PingRequest)            returns (PingResponse);
   rpc CreateCall(CreateCallRequest) returns (CallhandlingResponse) {}
+
+  rpc DialEvent(EventRequest) returns (CallhandlingResponse) {}
+  rpc RingEvent(EventRequest) returns (CallhandlingResponse) {}
+  rpc ConnectEvent(EventRequest) returns (CallhandlingResponse) {}
+  rpc DisconnectEvent(EventRequest) returns (CallhandlingResponse) {}
+  rpc JoinEvent(EventRequest) returns (CallhandlingResponse) {}
+  rpc ExitEvent(EventRequest) returns (CallhandlingResponse) {}
+  rpc DispositionEvent(EventRequest) returns (CallhandlingResponse) {}
 }
 
 message Call {
@@ -15,6 +23,14 @@ message Call {
   string ANI = 4;
   string DNIS = 5;
   string status = 6;
+}
+
+message Event {
+  int64 call_id = 1;
+  string event_type = 2;
+  int64 identity_id = 3;
+  int64 timestamp = 4;
+  string meta = 5;
 }
 
 // #################################
@@ -42,4 +58,8 @@ message CallhandlingResponse {}
 
 message CreateCallRequest {
   Call call = 1;
+}
+
+message EventRequest {
+  Event event = 1;
 }

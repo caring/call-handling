@@ -60,3 +60,15 @@ CREATE TABLE calls (
 ENGINE=InnoDB
 DEFAULT CHARSET=utf8mb4
 COMMENT='CallHandling Service: Collection of all call records';
+
+
+CREATE TABLE events (
+    call_id     BIGINT NOT NULL,
+    type        VARCHAR(50),
+    identity_id BIGINT,
+    timestamp   BIGINT,
+    meta        VARCHAR(50)
+)
+ENGINE=InnoDB
+DEFAULT CHARSET=utf8mb4
+COMMENT='CallHandling Service: Collection of all event records';

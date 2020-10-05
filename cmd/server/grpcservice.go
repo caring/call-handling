@@ -13,6 +13,16 @@ import (
 	_ "google.golang.org/grpc/codes"
 )
 
+const (
+	DIAL       = "dialing"
+	RING       = "ringing"
+	CONNECT    = "connected"
+	DISCONNECT = "disconnected"
+	JOIN       = "party joined"
+	EXIT       = "party exited"
+	DISPO      = "dispositioned"
+)
+
 type service struct {
 }
 
@@ -38,5 +48,41 @@ func (s *service) CreateCall(ctx context.Context, in *pb.CreateCallRequest) (*pb
 
 	err := store.Calls.Create(ctx, db.NewCall(in))
 
+	return &pb.CallhandlingResponse{}, err
+}
+
+func (s *service) DialEvent(ctx context.Context, in *pb.EventRequest) (*pb.CallhandlingResponse, error) {
+	return createEvent(ctx, in, DIAL)
+}
+
+func (s *service) RingEvent(ctx context.Context, in *pb.EventRequest) (*pb.CallhandlingResponse, error) {
+	return createEvent(ctx, in, RING)
+}
+
+func (s *service) ConnectEvent(ctx context.Context, in *pb.EventRequest) (*pb.CallhandlingResponse, error) {
+	return createEvent(ctx, in, CONNECT)
+}
+
+func (s *service) DisconnectEvent(ctx context.Context, in *pb.EventRequest) (*pb.CallhandlingResponse, error) {
+	return createEvent(ctx, in, DISCONNECT)
+}
+
+func (s *service) JoinEvent(ctx context.Context, in *pb.EventRequest) (*pb.CallhandlingResponse, error) {
+	return createEvent(ctx, in, JOIN)
+}
+
+func (s *service) ExitEvent(ctx context.Context, in *pb.EventRequest) (*pb.CallhandlingResponse, error) {
+	return createEvent(ctx, in, EXIT)
+}
+
+func (s *service) DispositionEvent(ctx context.Context, in *pb.EventRequest) (*pb.CallhandlingResponse, error) {
+	return createEvent(ctx, in, DISPO)
+}
+
+func createEvent(ctx context.Context, in *pb.EventRequest, eventType string) (*pb.CallhandlingResponse, error) {
+	l.Info(fmt.Sprintf("Received: %v", in.Event))
+	ctx, cancel := context.WithTimeout(ctx, 1*time.Second)
+	defer cancel()
+	err := store.Events.Create(ctx, db.NewEvent(in, eventType))
 	return &pb.CallhandlingResponse{}, err
 }

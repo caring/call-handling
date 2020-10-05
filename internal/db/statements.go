@@ -35,4 +35,16 @@ var statements = map[string]string{
 	//   callhandling_id = UUID_TO_BIN(?)
 	//   AND deleted_at IS NULL
 	// `,
+	"create-event": `
+	INSERT INTO events (call_id, type, identity_id, timestamp, meta)
+		values(?, ?, ?, ?, ?)
+	`,
+	"get_event": `
+  SELECT
+    *
+  FROM
+    events
+  WHERE
+    call_id = ?
+	`,
 }

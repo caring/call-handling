@@ -50,7 +50,7 @@ func (svc *eventService) GetTx(ctx context.Context, ID int64) (*Event, error) {
 }
 
 func (svc *eventService) get(ctx context.Context, useTx bool, ID int64) (*Event, error) {
-	errMsg := func() string { return "Error executing get call - " + fmt.Sprint(ID) }
+	errMsg := func() string { return "Error executing get event - " + fmt.Sprint(ID) }
 
 	var (
 		stmt *sql.Stmt
@@ -94,7 +94,7 @@ func (svc *eventService) CreateTx(ctx context.Context, input *Event) error {
 }
 
 func (svc *eventService) create(ctx context.Context, useTx bool, input *Event) error {
-	errMsg := func() string { return "Error executing create call - " + fmt.Sprint(input) }
+	errMsg := func() string { return "Error executing create event - " + fmt.Sprint(input) }
 
 	var (
 		stmt *sql.Stmt
@@ -124,7 +124,7 @@ func (svc *eventService) create(ctx context.Context, useTx bool, input *Event) e
 	}
 
 	if rowCount == 0 {
-		return errors.Wrap(ErrNotFound, errMsg())
+		return errors.Wrap(ErrNoRowsAffected, errMsg())
 	}
 
 	return nil

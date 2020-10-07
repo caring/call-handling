@@ -1,29 +1,42 @@
 package main
 
 import (
-  _ "context"
+	"context"
+	"fmt"
+	"time"
 
-  _ "github.com/caring/call-handling/internal/db"
+	"github.com/caring/call-handling/internal/db"
 
-  _ "github.com/caring/call-handling/internal/handlers"
-  "github.com/caring/call-handling/pb"
-  _ "github.com/caring/go-packages/pkg/errors"
-  _ "google.golang.org/grpc/codes"
+	// _ "github.com/caring/call-handling/internal/handlers"
+	"github.com/caring/call-handling/pb"
+	_ "github.com/caring/go-packages/pkg/errors"
+	_ "google.golang.org/grpc/codes"
 )
 
 type service struct {
 }
 
 func (s *service) Ping(ctx context.Context, in *pb.PingRequest) (*pb.PingResponse, error) {
-    l.Printf("Received: %v", in.Data)
-    resp := "Data: " + in.Data
-    
-    ctx, cancel := context.WithTimeout(ctx, 1*time.Second)
-    defer cancel()
-    status := "up"
-    if err := store.Ping(ctx); err != nil {
-      status = "down"
-    }
-    return &pb.PingResponse{Data: resp + "; Database: " + status}, nil
-    
+	l.Info(fmt.Sprintf("Received: %v", in.Data))
+	resp := "Data: " + in.Data
+
+	ctx, cancel := context.WithTimeout(ctx, 1*time.Second)
+	defer cancel()
+	status := "up"
+	if err := store.Ping(ctx); err != nil {
+		status = "down"
+	}
+	return &pb.PingResponse{Data: resp + "; Database: " + status}, nil
+
+}
+
+func (s *service) CreateCall(ctx context.Context, in *pb.CreateCallRequest) (*pb.CallhandlingResponse, error) {
+	l.Info(fmt.Sprintf("Received: %v", in.Call))
+
+	ctx, cancel := context.WithTimeout(ctx, 1*time.Second)
+	defer cancel()
+
+	err := store.Calls.Create(ctx, db.NewCall(in))
+
+	return &pb.CallhandlingResponse{}, err
 }

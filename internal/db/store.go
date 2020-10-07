@@ -6,6 +6,7 @@ import (
 
 	"github.com/caring/go-packages/pkg/errors"
 	_ "github.com/caring/go-packages/pkg/uuid"
+
 	// anonymous import so package exports are not exposed
 	_ "github.com/go-sql-driver/mysql"
 )
@@ -18,6 +19,8 @@ var txCtxKey = ctxKey{}
 // of statements that we will use to interface with
 // a backing store
 type Store struct {
+	Calls *callhandlingService
+
 	db    *sql.DB
 	stmts map[string]*sql.Stmt
 }
@@ -44,6 +47,7 @@ func NewStore(dataSourceName string) (*Store, error) {
 	s := Store{
 		db:    db,
 		stmts: stmts,
+		Calls: &callhandlingService{db, stmts},
 	}
 
 	return &s, nil
@@ -75,10 +79,10 @@ func (s *Store) Close() error {
 
 // Ping will check the connection to the underlying database
 func (s *Store) Ping(ctx context.Context) error {
-	if err = s.db.PingContext(ctx); err != nil {
-    return err
-  }
-  return nil
+	if err := s.db.PingContext(ctx); err != nil {
+		return err
+	}
+	return nil
 }
 
 // GetTx initializes a db transaction

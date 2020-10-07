@@ -2,12 +2,11 @@ package main
 
 import (
 	"errors"
+	"log"
 	"net"
 	"net/http"
 	"os"
 	"time"
-	"log"
-
 
 	"github.com/caring/call-handling/internal/db"
 
@@ -20,12 +19,10 @@ import (
 	"google.golang.org/grpc"
 )
 
-
 var (
 	store        *db.Store
 	dbConnection string
 )
-
 
 var (
 	l *logging.Logger
@@ -69,7 +66,7 @@ func main() {
 	httpL := m.Match(cmux.HTTP1Fast())
 
 	// register the server with gRPC
-	pb.RegisterCallHandlingServer(g, &service{})
+	pb.RegisterCallhandlingServer(g, &service{})
 
 	// Add a health check endpoint for automated container monitoring
 	http.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {

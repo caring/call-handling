@@ -51,9 +51,12 @@ COMMENT='A service or product that caring markets for its b2b customers';
 
 CREATE TABLE calls (
     call_id         BIGINT NOT NULL PRIMARY KEY,
+    /* Unique ID for any incoming or outgoing call created by Twilio */
     sid             BIGINT,
     conversation_id BIGINT,
+    /* Origin number for an incoming call */
     ANI             VARCHAR(50),
+    /* Number dialed by origin for an incoming call */
     DNIS            VARCHAR(50),
     status          VARCHAR(50)
 )
@@ -67,6 +70,7 @@ CREATE TABLE events (
     type        VARCHAR(50),
     identity_id BIGINT,
     timestamp   BIGINT,
+    /* Metadata provided by Twilio */
     meta        VARCHAR(50)
 )
 ENGINE=InnoDB

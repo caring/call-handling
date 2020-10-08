@@ -16,6 +16,7 @@ service Callhandling {
   rpc DispositionEvent(EventRequest) returns (CallhandlingResponse) {}
   rpc EnqueuedEvent(EventRequest) returns (CallhandlingResponse) {}
   rpc VoicemailEvent(EventRequest) returns (CallhandlingResponse) {}
+  rpc ExtensionEvent(EventRequest) returns (CallhandlingResponse) {}
 }
 
 message Call {

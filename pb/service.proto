@@ -14,6 +14,7 @@ service Callhandling {
   rpc JoinEvent(EventRequest) returns (CallhandlingResponse) {}
   rpc ExitEvent(EventRequest) returns (CallhandlingResponse) {}
   rpc DispositionEvent(EventRequest) returns (CallhandlingResponse) {}
+  rpc EnqueuedEvent(EventRequest) returns (CallhandlingResponse) {}
 }
 
 message Call {

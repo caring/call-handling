@@ -10,8 +10,8 @@ import (
 	"github.com/caring/call-handling/pb"
 )
 
-// callhandlingService provides an API for interacting with the calls table
-type callhandlingService struct {
+// callService provides an API for interacting with the calls table
+type callService struct {
 	db    *sql.DB
 	stmts map[string]*sql.Stmt
 }
@@ -50,17 +50,17 @@ func (m *Call) ToProto() *pb.CallhandlingResponse {
 }
 
 // Get fetches a single call from the db
-func (svc *callhandlingService) Get(ctx context.Context, ID int64) (*Call, error) {
+func (svc *callService) Get(ctx context.Context, ID int64) (*Call, error) {
 	return svc.get(ctx, false, ID)
 }
 
 // GetTx fetches a single call from the db inside of a tx from ctx
-func (svc *callhandlingService) GetTx(ctx context.Context, ID int64) (*Call, error) {
+func (svc *callService) GetTx(ctx context.Context, ID int64) (*Call, error) {
 	return svc.get(ctx, true, ID)
 }
 
 // get fetches a single call from the db
-func (svc *callhandlingService) get(ctx context.Context, useTx bool, ID int64) (*Call, error) {
+func (svc *callService) get(ctx context.Context, useTx bool, ID int64) (*Call, error) {
 	errMsg := func() string { return "Error executing get call - " + fmt.Sprint(ID) }
 
 	var (
@@ -97,18 +97,18 @@ func (svc *callhandlingService) get(ctx context.Context, useTx bool, ID int64) (
 }
 
 // Create a new call
-func (svc *callhandlingService) Create(ctx context.Context, input *Call) error {
+func (svc *callService) Create(ctx context.Context, input *Call) error {
 	return svc.create(ctx, false, input)
 }
 
 // CreateTx creates a new call withing a tx from ctx
-func (svc *callhandlingService) CreateTx(ctx context.Context, input *Call) error {
+func (svc *callService) CreateTx(ctx context.Context, input *Call) error {
 	return svc.create(ctx, true, input)
 }
 
 // create a new call. if useTx = true then it will attempt to create the callhandling within a transaction
 // from context.
-func (svc *callhandlingService) create(ctx context.Context, useTx bool, input *Call) error {
+func (svc *callService) create(ctx context.Context, useTx bool, input *Call) error {
 	errMsg := func() string { return "Error executing create call - " + fmt.Sprint(input) }
 
 	var (
@@ -139,25 +139,25 @@ func (svc *callhandlingService) create(ctx context.Context, useTx bool, input *C
 	}
 
 	if rowCount == 0 {
-		// return errors.Wrap(ErrNotCreated, errMsg()) //TODO: ErrNotCreated missing
+		return errors.Wrap(ErrNoRowsAffected, errMsg())
 	}
 
 	return nil
 }
 
 // Update updates a single call row in the DB
-func (svc *callhandlingService) Update(ctx context.Context, input *Call) error {
+func (svc *callService) Update(ctx context.Context, input *Call) error {
 	return svc.update(ctx, false, input)
 }
 
 // UpdateTx updates a single call row in the DB within a tx from ctx
-func (svc *callhandlingService) UpdateTx(ctx context.Context, input *Call) error {
+func (svc *callService) UpdateTx(ctx context.Context, input *Call) error {
 	return svc.update(ctx, true, input)
 }
 
 // update a call. if useTx = true then it will attempt to update the callhandling within a transaction
 // from context.
-func (svc *callhandlingService) update(ctx context.Context, useTx bool, input *Call) error {
+func (svc *callService) update(ctx context.Context, useTx bool, input *Call) error {
 	errMsg := func() string { return "Error executing update callhandling - " + fmt.Sprint(input) }
 
 	var (
@@ -195,18 +195,18 @@ func (svc *callhandlingService) update(ctx context.Context, useTx bool, input *C
 }
 
 // Delete sets deleted_at for a single calls row
-func (svc *callhandlingService) Delete(ctx context.Context, ID int64) error {
+func (svc *callService) Delete(ctx context.Context, ID int64) error {
 	return svc.delete(ctx, false, ID)
 }
 
 // DeleteTx sets deleted_at for a single calls row within a tx from ctx
-func (svc *callhandlingService) DeleteTx(ctx context.Context, ID int64) error {
+func (svc *callService) DeleteTx(ctx context.Context, ID int64) error {
 	return svc.delete(ctx, true, ID)
 }
 
 // delete a callhandling by setting deleted at. if useTx = true then it will attempt to delete the callhandling within a transaction
 // from context.
-func (svc *callhandlingService) delete(ctx context.Context, useTx bool, ID int64) error {
+func (svc *callService) delete(ctx context.Context, useTx bool, ID int64) error {
 	errMsg := func() string { return "Error executing delete call - " + fmt.Sprint(ID) }
 
 	var (
@@ -237,7 +237,7 @@ func (svc *callhandlingService) delete(ctx context.Context, useTx bool, ID int64
 	}
 
 	if rowCount == 0 {
-		return errors.Wrap(ErrNotFound, errMsg())
+		return errors.Wrap(ErrNoRowsAffected, errMsg())
 	}
 
 	return nil

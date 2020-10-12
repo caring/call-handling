@@ -19,7 +19,8 @@ var txCtxKey = ctxKey{}
 // of statements that we will use to interface with
 // a backing store
 type Store struct {
-	Calls *callhandlingService
+	Calls  *callService
+	Events *eventService
 
 	db    *sql.DB
 	stmts map[string]*sql.Stmt
@@ -45,9 +46,10 @@ func NewStore(dataSourceName string) (*Store, error) {
 	}
 
 	s := Store{
-		db:    db,
-		stmts: stmts,
-		Calls: &callhandlingService{db, stmts},
+		db:     db,
+		stmts:  stmts,
+		Calls:  &callService{db, stmts},
+		Events: &eventService{db, stmts},
 	}
 
 	return &s, nil

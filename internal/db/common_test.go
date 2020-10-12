@@ -26,9 +26,10 @@ func NewTestDB(stmts map[string]string) (*Store, sqlmock.Sqlmock, error) {
 	}
 
 	s := Store{
-		db:    db,
-		stmts: prepared,
-		Calls: &callhandlingService{db, prepared},
+		db:     db,
+		stmts:  prepared,
+		Calls:  &callService{db, prepared},
+		Events: &eventService{db, prepared},
 	}
 
 	return &s, mock, nil

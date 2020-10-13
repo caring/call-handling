@@ -5,22 +5,11 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/caring/call-handling/internal/db"
+	"github.com/caring/call-handling/internal/handlers"
 
-	// _ "github.com/caring/call-handling/internal/handlers"
 	"github.com/caring/call-handling/pb"
 	_ "github.com/caring/go-packages/pkg/errors"
 	_ "google.golang.org/grpc/codes"
-)
-
-const (
-	DIAL       = "dialing"
-	RING       = "ringing"
-	CONNECT    = "connected"
-	DISCONNECT = "disconnected"
-	JOIN       = "party joined"
-	EXIT       = "party exited"
-	DISPO      = "dispositioned"
 )
 
 type service struct {
@@ -41,48 +30,33 @@ func (s *service) Ping(ctx context.Context, in *pb.PingRequest) (*pb.PingRespons
 }
 
 func (s *service) CreateCall(ctx context.Context, in *pb.CreateCallRequest) (*pb.CallhandlingResponse, error) {
-	l.Info(fmt.Sprintf("Received: %v", in.Call))
-
-	ctx, cancel := context.WithTimeout(ctx, 1*time.Second)
-	defer cancel()
-
-	err := store.Calls.Create(ctx, db.NewCall(in))
-
-	return &pb.CallhandlingResponse{}, err
+	return handlers.CreateCall(ctx, in, store.Calls)
 }
 
-func (s *service) DialEvent(ctx context.Context, in *pb.EventRequest) (*pb.CallhandlingResponse, error) {
-	return createEvent(ctx, in, DIAL)
+func (s *service) Dialed(ctx context.Context, in *pb.EventRequest) (*pb.CallhandlingResponse, error) {
+	return handlers.Dialed(ctx, in, store.Events)
 }
 
-func (s *service) RingEvent(ctx context.Context, in *pb.EventRequest) (*pb.CallhandlingResponse, error) {
-	return createEvent(ctx, in, RING)
+func (s *service) Ringed(ctx context.Context, in *pb.EventRequest) (*pb.CallhandlingResponse, error) {
+	return handlers.Ringed(ctx, in, store.Events)
 }
 
-func (s *service) ConnectEvent(ctx context.Context, in *pb.EventRequest) (*pb.CallhandlingResponse, error) {
-	return createEvent(ctx, in, CONNECT)
+func (s *service) Connected(ctx context.Context, in *pb.EventRequest) (*pb.CallhandlingResponse, error) {
+	return handlers.Connected(ctx, in, store.Events)
 }
 
-func (s *service) DisconnectEvent(ctx context.Context, in *pb.EventRequest) (*pb.CallhandlingResponse, error) {
-	return createEvent(ctx, in, DISCONNECT)
+func (s *service) Disconnected(ctx context.Context, in *pb.EventRequest) (*pb.CallhandlingResponse, error) {
+	return handlers.Disconnected(ctx, in, store.Events)
 }
 
-func (s *service) JoinEvent(ctx context.Context, in *pb.EventRequest) (*pb.CallhandlingResponse, error) {
-	return createEvent(ctx, in, JOIN)
+func (s *service) Joined(ctx context.Context, in *pb.EventRequest) (*pb.CallhandlingResponse, error) {
+	return handlers.Joined(ctx, in, store.Events)
 }
 
-func (s *service) ExitEvent(ctx context.Context, in *pb.EventRequest) (*pb.CallhandlingResponse, error) {
-	return createEvent(ctx, in, EXIT)
+func (s *service) Exited(ctx context.Context, in *pb.EventRequest) (*pb.CallhandlingResponse, error) {
+	return handlers.Exited(ctx, in, store.Events)
 }
 
-func (s *service) DispositionEvent(ctx context.Context, in *pb.EventRequest) (*pb.CallhandlingResponse, error) {
-	return createEvent(ctx, in, DISPO)
-}
-
-func createEvent(ctx context.Context, in *pb.EventRequest, eventType string) (*pb.CallhandlingResponse, error) {
-	l.Info(fmt.Sprintf("Received: %v", in.Event))
-	ctx, cancel := context.WithTimeout(ctx, 1*time.Second)
-	defer cancel()
-	err := store.Events.Create(ctx, db.NewEvent(in, eventType))
-	return &pb.CallhandlingResponse{}, err
+func (s *service) Dispositioned(ctx context.Context, in *pb.EventRequest) (*pb.CallhandlingResponse, error) {
+	return handlers.Dispositioned(ctx, in, store.Events)
 }

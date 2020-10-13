@@ -23,6 +23,7 @@ const (
 	DISPO      = "dispositioned"
 	ENQUEUE    = "enqueued"
 	VOICEMAIL  = "voicemail created"
+	EXT        = "extension dialed"
 )
 
 type service struct {
@@ -87,6 +88,10 @@ func (s *service) EnqueuedEvent(ctx context.Context, in *pb.EventRequest) (*pb.C
 
 func (s *service) VoicemailEvent(ctx context.Context, in *pb.EventRequest) (*pb.CallhandlingResponse, error) {
 	return createEvent(ctx, in, VOICEMAIL)
+}
+
+func (s *service) ExtensionEvent(ctx context.Context, in *pb.EventRequest) (*pb.CallhandlingResponse, error) {
+	return createEvent(ctx, in, EXT)
 }
 
 func createEvent(ctx context.Context, in *pb.EventRequest, eventType string) (*pb.CallhandlingResponse, error) {

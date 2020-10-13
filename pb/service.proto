@@ -7,13 +7,13 @@ service Callhandling {
   rpc Ping (PingRequest)            returns (PingResponse);
   rpc CreateCall(CreateCallRequest) returns (CallhandlingResponse) {}
 
-  rpc DialEvent(EventRequest) returns (CallhandlingResponse) {}
-  rpc RingEvent(EventRequest) returns (CallhandlingResponse) {}
-  rpc ConnectEvent(EventRequest) returns (CallhandlingResponse) {}
-  rpc DisconnectEvent(EventRequest) returns (CallhandlingResponse) {}
-  rpc JoinEvent(EventRequest) returns (CallhandlingResponse) {}
-  rpc ExitEvent(EventRequest) returns (CallhandlingResponse) {}
-  rpc DispositionEvent(EventRequest) returns (CallhandlingResponse) {}
+  rpc Dialed(EventRequest) returns (CallhandlingResponse) {}
+  rpc Ringed(EventRequest) returns (CallhandlingResponse) {}
+  rpc Connected(EventRequest) returns (CallhandlingResponse) {}
+  rpc Disconnected(EventRequest) returns (CallhandlingResponse) {}
+  rpc Joined(EventRequest) returns (CallhandlingResponse) {}
+  rpc Exited(EventRequest) returns (CallhandlingResponse) {}
+  rpc Dispositioned(EventRequest) returns (CallhandlingResponse) {}
 }
 
 message Call {
@@ -27,10 +27,9 @@ message Call {
 
 message Event {
   int64 call_id = 1;
-  string event_type = 2;
-  int64 identity_id = 3;
-  int64 timestamp = 4;
-  string meta = 5;
+  int64 identity_id = 2;
+  int64 timestamp = 3;
+  string meta = 4;
 }
 
 // #################################

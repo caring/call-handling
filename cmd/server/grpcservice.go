@@ -21,6 +21,7 @@ const (
 	JOIN       = "party joined"
 	EXIT       = "party exited"
 	DISPO      = "dispositioned"
+	ENQUEUE    = "enqueued"
 )
 
 type service struct {
@@ -77,6 +78,10 @@ func (s *service) ExitEvent(ctx context.Context, in *pb.EventRequest) (*pb.Callh
 
 func (s *service) DispositionEvent(ctx context.Context, in *pb.EventRequest) (*pb.CallhandlingResponse, error) {
 	return createEvent(ctx, in, DISPO)
+}
+
+func (s *service) EnqueuedEvent(ctx context.Context, in *pb.EventRequest) (*pb.CallhandlingResponse, error) {
+	return createEvent(ctx, in, ENQUEUE)
 }
 
 func createEvent(ctx context.Context, in *pb.EventRequest, eventType string) (*pb.CallhandlingResponse, error) {

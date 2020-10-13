@@ -24,89 +24,39 @@ type eventMethods interface {
 	Create(context.Context, *db.Event) error
 }
 
-func Dialed(ctx context.Context, in *pb.EventRequest, store eventMethods) (resp *pb.CallhandlingResponse, err error) {
-	var (
-		event *db.Event
-	)
-	event = db.NewEvent(in, DIAL)
-	err = store.Create(ctx, event)
-	if err != nil {
-		err = errors.WithGrpcStatus(err, codes.Internal)
-	}
-	resp = event.ToProto()
-	return
+func Dialed(ctx context.Context, in *pb.EventRequest, store eventMethods) (*pb.CallhandlingResponse, error) {
+	return createEvent(ctx, in, store, DIAL)
 }
 
-func Ringed(ctx context.Context, in *pb.EventRequest, store eventMethods) (resp *pb.CallhandlingResponse, err error) {
-	var (
-		event *db.Event
-	)
-	event = db.NewEvent(in, RING)
-	err = store.Create(ctx, event)
-	if err != nil {
-		err = errors.WithGrpcStatus(err, codes.Internal)
-	}
-	resp = event.ToProto()
-	return
+func Ringed(ctx context.Context, in *pb.EventRequest, store eventMethods) (*pb.CallhandlingResponse, error) {
+	return createEvent(ctx, in, store, RING)
 }
 
-func Connected(ctx context.Context, in *pb.EventRequest, store eventMethods) (resp *pb.CallhandlingResponse, err error) {
-	var (
-		event *db.Event
-	)
-	event = db.NewEvent(in, CONNECT)
-	err = store.Create(ctx, event)
-	if err != nil {
-		err = errors.WithGrpcStatus(err, codes.Internal)
-	}
-	resp = event.ToProto()
-	return
+func Connected(ctx context.Context, in *pb.EventRequest, store eventMethods) (*pb.CallhandlingResponse, error) {
+	return createEvent(ctx, in, store, CONNECT)
 }
 
-func Disconnected(ctx context.Context, in *pb.EventRequest, store eventMethods) (resp *pb.CallhandlingResponse, err error) {
-	var (
-		event *db.Event
-	)
-	event = db.NewEvent(in, DISCONNECT)
-	err = store.Create(ctx, event)
-	if err != nil {
-		err = errors.WithGrpcStatus(err, codes.Internal)
-	}
-	resp = event.ToProto()
-	return
+func Disconnected(ctx context.Context, in *pb.EventRequest, store eventMethods) (*pb.CallhandlingResponse, error) {
+	return createEvent(ctx, in, store, DISCONNECT)
 }
 
-func Joined(ctx context.Context, in *pb.EventRequest, store eventMethods) (resp *pb.CallhandlingResponse, err error) {
-	var (
-		event *db.Event
-	)
-	event = db.NewEvent(in, JOIN)
-	err = store.Create(ctx, event)
-	if err != nil {
-		err = errors.WithGrpcStatus(err, codes.Internal)
-	}
-	resp = event.ToProto()
-	return
+func Joined(ctx context.Context, in *pb.EventRequest, store eventMethods) (*pb.CallhandlingResponse, error) {
+	return createEvent(ctx, in, store, JOIN)
 }
 
-func Exited(ctx context.Context, in *pb.EventRequest, store eventMethods) (resp *pb.CallhandlingResponse, err error) {
-	var (
-		event *db.Event
-	)
-	event = db.NewEvent(in, EXIT)
-	err = store.Create(ctx, event)
-	if err != nil {
-		err = errors.WithGrpcStatus(err, codes.Internal)
-	}
-	resp = event.ToProto()
-	return
+func Exited(ctx context.Context, in *pb.EventRequest, store eventMethods) (*pb.CallhandlingResponse, error) {
+	return createEvent(ctx, in, store, EXIT)
 }
 
-func Dispositioned(ctx context.Context, in *pb.EventRequest, store eventMethods) (resp *pb.CallhandlingResponse, err error) {
+func Dispositioned(ctx context.Context, in *pb.EventRequest, store eventMethods) (*pb.CallhandlingResponse, error) {
+	return createEvent(ctx, in, store, DISPO)
+}
+
+func createEvent(ctx context.Context, in *pb.EventRequest, store eventMethods, eventType string) (resp *pb.CallhandlingResponse, err error) {
 	var (
 		event *db.Event
 	)
-	event = db.NewEvent(in, DISPO)
+	event = db.NewEvent(in, eventType)
 	err = store.Create(ctx, event)
 	if err != nil {
 		err = errors.WithGrpcStatus(err, codes.Internal)

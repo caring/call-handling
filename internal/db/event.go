@@ -37,8 +37,14 @@ func NewEvent(proto protoEvent, eventType string) *Event {
 	}
 }
 
-func (m *Event) ToProto() *pb.CallhandlingResponse {
-	return &pb.CallhandlingResponse{}
+func (m *Event) ToProto() *pb.EventResponse {
+	return &pb.EventResponse{
+		CallId:     m.CallID,
+		IdentityId: m.IdentityID,
+		Timestamp:  m.Timestamp,
+		Meta:       m.Meta,
+		Type:       m.Type,
+	}
 }
 
 func (svc *eventService) Get(ctx context.Context, ID int64) (*Event, error) {

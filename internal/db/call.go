@@ -45,8 +45,15 @@ func NewCall(proto protoCall) *Call {
 }
 
 // ToProto casts a db call into a proto response object
-func (m *Call) ToProto() *pb.CallhandlingResponse {
-	return &pb.CallhandlingResponse{}
+func (m *Call) ToProto() *pb.CallResponse {
+	return &pb.CallResponse{
+		CallId:         m.ID,
+		Sid:            m.SID,
+		ConversationId: m.ConversationID,
+		ANI:            m.ANI,
+		DNIS:           m.DNIS,
+		Status:         m.Status,
+	}
 }
 
 // Get fetches a single call from the db

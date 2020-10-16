@@ -5,15 +5,16 @@ option go_package = ".;pb";
 
 service Callhandling {
   rpc Ping (PingRequest)            returns (PingResponse);
-  rpc CreateCall(CreateCallRequest) returns (CallhandlingResponse) {}
+  rpc CreateCall(CallRequest) returns (CallResponse) {}
 
-  rpc Dialed(EventRequest) returns (CallhandlingResponse) {}
-  rpc Ringed(EventRequest) returns (CallhandlingResponse) {}
-  rpc Connected(EventRequest) returns (CallhandlingResponse) {}
-  rpc Disconnected(EventRequest) returns (CallhandlingResponse) {}
-  rpc Joined(EventRequest) returns (CallhandlingResponse) {}
-  rpc Exited(EventRequest) returns (CallhandlingResponse) {}
-  rpc Dispositioned(EventRequest) returns (CallhandlingResponse) {}
+  rpc Dialed(EventRequest) returns (EventResponse) {}
+  rpc Ringed(EventRequest) returns (EventResponse) {}
+  rpc Connected(EventRequest) returns (EventResponse) {}
+  rpc Disconnected(EventRequest) returns (EventResponse) {}
+  rpc Joined(EventRequest) returns (EventResponse) {}
+  rpc Exited(EventRequest) returns (EventResponse) {}
+  rpc Dispositioned(EventRequest) returns (EventResponse) {}
+  rpc Enqueued(EventRequest) returns (EventResponse) {}
 }
 
 message Call {
@@ -45,20 +46,34 @@ message PingResponse {
 }
 
 // #################################
-//          Shared Messages
+//          Calls
 // #################################
 
-
-// #################################
-//          Callhandling
-// #################################
-
-message CallhandlingResponse {}
-
-message CreateCallRequest {
+message CallRequest {
   Call call = 1;
 }
 
+message CallResponse {
+  int64 call_id = 1;
+  int64 sid = 2;
+  int64 conversation_id = 3;
+  string ANI = 4;
+  string DNIS = 5;
+  string status = 6;
+}
+
+// #################################
+//          Events
+// #################################
+
 message EventRequest {
   Event event = 1;
+}
+
+message EventResponse {
+  int64 call_id = 1;
+  int64 identity_id = 2;
+  int64 timestamp = 3;
+  string meta = 4;
+  string type = 5;
 }

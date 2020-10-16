@@ -12,6 +12,7 @@ import (
 	_ "google.golang.org/grpc/codes"
 )
 
+
 type service struct {
 }
 
@@ -63,4 +64,5 @@ func (s *service) Dispositioned(ctx context.Context, in *pb.EventRequest) (*pb.E
 
 func (s *service) Enqueued(ctx context.Context, in *pb.EventRequest) (*pb.EventResponse, error) {
 	return handlers.Enqueued(ctx, in, store.Events)
+
 }

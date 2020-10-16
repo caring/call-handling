@@ -13,7 +13,7 @@ type callMethods interface {
 	Create(context.Context, *db.Call) error
 }
 
-func CreateCall(ctx context.Context, in *pb.CreateCallRequest, store callMethods) (resp *pb.CallhandlingResponse, err error) {
+func CreateCall(ctx context.Context, in *pb.CallRequest, store callMethods) (resp *pb.CallResponse, err error) {
 	var (
 		call *db.Call
 	)

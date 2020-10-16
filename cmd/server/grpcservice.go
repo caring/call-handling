@@ -29,34 +29,38 @@ func (s *service) Ping(ctx context.Context, in *pb.PingRequest) (*pb.PingRespons
 
 }
 
-func (s *service) CreateCall(ctx context.Context, in *pb.CreateCallRequest) (*pb.CallhandlingResponse, error) {
+func (s *service) CreateCall(ctx context.Context, in *pb.CallRequest) (*pb.CallResponse, error) {
 	return handlers.CreateCall(ctx, in, store.Calls)
 }
 
-func (s *service) Dialed(ctx context.Context, in *pb.EventRequest) (*pb.CallhandlingResponse, error) {
+func (s *service) Dialed(ctx context.Context, in *pb.EventRequest) (*pb.EventResponse, error) {
 	return handlers.Dialed(ctx, in, store.Events)
 }
 
-func (s *service) Ringed(ctx context.Context, in *pb.EventRequest) (*pb.CallhandlingResponse, error) {
+func (s *service) Ringed(ctx context.Context, in *pb.EventRequest) (*pb.EventResponse, error) {
 	return handlers.Ringed(ctx, in, store.Events)
 }
 
-func (s *service) Connected(ctx context.Context, in *pb.EventRequest) (*pb.CallhandlingResponse, error) {
+func (s *service) Connected(ctx context.Context, in *pb.EventRequest) (*pb.EventResponse, error) {
 	return handlers.Connected(ctx, in, store.Events)
 }
 
-func (s *service) Disconnected(ctx context.Context, in *pb.EventRequest) (*pb.CallhandlingResponse, error) {
+func (s *service) Disconnected(ctx context.Context, in *pb.EventRequest) (*pb.EventResponse, error) {
 	return handlers.Disconnected(ctx, in, store.Events)
 }
 
-func (s *service) Joined(ctx context.Context, in *pb.EventRequest) (*pb.CallhandlingResponse, error) {
+func (s *service) Joined(ctx context.Context, in *pb.EventRequest) (*pb.EventResponse, error) {
 	return handlers.Joined(ctx, in, store.Events)
 }
 
-func (s *service) Exited(ctx context.Context, in *pb.EventRequest) (*pb.CallhandlingResponse, error) {
+func (s *service) Exited(ctx context.Context, in *pb.EventRequest) (*pb.EventResponse, error) {
 	return handlers.Exited(ctx, in, store.Events)
 }
 
-func (s *service) Dispositioned(ctx context.Context, in *pb.EventRequest) (*pb.CallhandlingResponse, error) {
+func (s *service) Dispositioned(ctx context.Context, in *pb.EventRequest) (*pb.EventResponse, error) {
 	return handlers.Dispositioned(ctx, in, store.Events)
+}
+
+func (s *service) Enqueued(ctx context.Context, in *pb.EventRequest) (*pb.EventResponse, error) {
+	return handlers.Enqueued(ctx, in, store.Events)
 }

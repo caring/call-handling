@@ -18,41 +18,46 @@ const (
 	JOIN       = "party joined"
 	EXIT       = "party exited"
 	DISPO      = "dispositioned"
+	ENQUEUE    = "enqueued"
 )
 
 type eventMethods interface {
 	Create(context.Context, *db.Event) error
 }
 
-func Dialed(ctx context.Context, in *pb.EventRequest, store eventMethods) (*pb.CallhandlingResponse, error) {
+func Dialed(ctx context.Context, in *pb.EventRequest, store eventMethods) (*pb.EventResponse, error) {
 	return createEvent(ctx, in, store, DIAL)
 }
 
-func Ringed(ctx context.Context, in *pb.EventRequest, store eventMethods) (*pb.CallhandlingResponse, error) {
+func Ringed(ctx context.Context, in *pb.EventRequest, store eventMethods) (*pb.EventResponse, error) {
 	return createEvent(ctx, in, store, RING)
 }
 
-func Connected(ctx context.Context, in *pb.EventRequest, store eventMethods) (*pb.CallhandlingResponse, error) {
+func Connected(ctx context.Context, in *pb.EventRequest, store eventMethods) (*pb.EventResponse, error) {
 	return createEvent(ctx, in, store, CONNECT)
 }
 
-func Disconnected(ctx context.Context, in *pb.EventRequest, store eventMethods) (*pb.CallhandlingResponse, error) {
+func Disconnected(ctx context.Context, in *pb.EventRequest, store eventMethods) (*pb.EventResponse, error) {
 	return createEvent(ctx, in, store, DISCONNECT)
 }
 
-func Joined(ctx context.Context, in *pb.EventRequest, store eventMethods) (*pb.CallhandlingResponse, error) {
+func Joined(ctx context.Context, in *pb.EventRequest, store eventMethods) (*pb.EventResponse, error) {
 	return createEvent(ctx, in, store, JOIN)
 }
 
-func Exited(ctx context.Context, in *pb.EventRequest, store eventMethods) (*pb.CallhandlingResponse, error) {
+func Exited(ctx context.Context, in *pb.EventRequest, store eventMethods) (*pb.EventResponse, error) {
 	return createEvent(ctx, in, store, EXIT)
 }
 
-func Dispositioned(ctx context.Context, in *pb.EventRequest, store eventMethods) (*pb.CallhandlingResponse, error) {
+func Dispositioned(ctx context.Context, in *pb.EventRequest, store eventMethods) (*pb.EventResponse, error) {
 	return createEvent(ctx, in, store, DISPO)
 }
 
-func createEvent(ctx context.Context, in *pb.EventRequest, store eventMethods, eventType string) (resp *pb.CallhandlingResponse, err error) {
+func Enqueued(ctx context.Context, in *pb.EventRequest, store eventMethods) (*pb.EventResponse, error) {
+	return createEvent(ctx, in, store, ENQUEUE)
+}
+
+func createEvent(ctx context.Context, in *pb.EventRequest, store eventMethods, eventType string) (resp *pb.EventResponse, err error) {
 	var (
 		event *db.Event
 	)
